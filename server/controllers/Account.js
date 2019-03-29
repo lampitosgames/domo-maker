@@ -69,6 +69,6 @@ const getToken = (_req, _res) => {
     csrfToken: req.csrfToken(),
   };
   res.json(csrfJSON);
-}
+};
 
 module.exports = { loginPage, login, logout, signup, getToken };

@@ -10,10 +10,11 @@ const handlebars = require('express-handlebars');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const url = require('url');
+const csrf = require('csurf');
 // Other files
 const router = require('./router.js');
 
-const port = process.env.PORT || process.env.NODE_PORT || 3001;
+const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/DomoMaker';
 
 mongoose.connect(dbURL, (err) => {
@@ -48,11 +49,21 @@ app.use(session({
   secret: 'Domo Arigato',
   resave: true,
   saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+  },
 }));
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/../views`);
 app.use(cookieParser());
+app.disable('x-powered-by');
+app.use(csrf());
+app.use((err, req, res, next) => {
+  if (err.code !== 'EBADCSRFTOKEN') { return next(err); }
+  console.log('Missing CSRF token');
+  return false;
+});
 
 router(app);
 

@@ -2,7 +2,7 @@ const models = require('../models');
 const Account = models.Account;
 
 const loginPage = (req, res) => {
-  res.render('login')
+  res.render('login');
 };
 
 const signupPage = (req, res) => {
@@ -56,11 +56,11 @@ const signup = (_req, _res) => {
     }).catch((err) => {
       console.log(err);
       if (err.code === 11000) {
-        return res.status(400).json({ error: "Username already in use." });
+        return res.status(400).json({ error: 'Username already in use.' });
       }
       return res.status(400).json({ error: 'An error occurred' });
     });
-  })
+  });
 };
 
 module.exports = { loginPage, login, logout, signupPage, signup };

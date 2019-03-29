@@ -1,4 +1,4 @@
-//Modules
+// Modules
 const path = require('path');
 const express = require('express');
 const compression = require('compression');
@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const handlebars = require('express-handlebars');
-//Other files
+// Other files
 const router = require('./router.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
@@ -24,7 +24,7 @@ const app = express();
 app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
 app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
 app.use(compression());
-app.use(bodyParser.urlencoded({ extended: true, }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/../views`);

@@ -29,6 +29,6 @@ const makeDomo = (req, res) => {
     }
     return res.status(400).json({ error: 'An error occured' });
   });
-}
+};
 
 module.exports = { makerPage, makeDomo };

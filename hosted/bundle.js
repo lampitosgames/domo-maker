@@ -1,9 +1,11 @@
 "use strict";
 
+var csrfToken = "";
+
 var handleDomo = function handleDomo(e) {
   e.preventDefault();
   $("#domoMessage").animate({ width: 'hide' }, 350);
-  if ($("#domoName").val() == '' || $("#domoAge").val() == '') {
+  if ($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoHeight").val() == '') {
     handleError("RAWR! All fields are required");
     return false;
   }
@@ -11,6 +13,12 @@ var handleDomo = function handleDomo(e) {
     loadDomosFromServer();
   });
   return false;
+};
+
+var deleteDomo = function deleteDomo(domo) {
+  sendAjax('POST', "/deleteDomo", $.param({ _csrf: csrfToken, owner: domo._id, name: domo.name, age: domo.age, height: domo.height }), function () {
+    loadDomosFromServer();
+  });
 };
 
 var DomoForm = function DomoForm(props) {
@@ -29,8 +37,45 @@ var DomoForm = function DomoForm(props) {
       "Age: "
     ),
     React.createElement("input", { id: "domoAge", type: "text", name: "age", placeholder: "Domo Age" }),
+    React.createElement(
+      "label",
+      { htmlFor: "height" },
+      "Height: "
+    ),
+    React.createElement("input", { id: "domoHeight", type: "text", name: "height", placeholder: "Domo Height" }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
     React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
+  );
+};
+
+var Domo = function Domo(props) {
+  return React.createElement(
+    "div",
+    { key: props.domo._id, className: "domo" },
+    React.createElement("img", { src: "/assets/img/domoface.jpeg", alt: "domo face", className: "domoFace" }),
+    React.createElement(
+      "h3",
+      { className: "domoName" },
+      "Name: ",
+      props.domo.name
+    ),
+    React.createElement(
+      "h3",
+      { className: "domoAge" },
+      "Age: ",
+      props.domo.age
+    ),
+    React.createElement(
+      "h3",
+      { className: "domoHeight" },
+      "Height: ",
+      props.domo.height
+    ),
+    React.createElement(
+      "h3",
+      { className: "deleteDomo", onClick: deleteDomo.bind(undefined, props.domo) },
+      "(X) DELETE DOMO"
+    )
   );
 };
 
@@ -47,25 +92,8 @@ var DomoList = function DomoList(props) {
     );
   }
   var domoNodes = props.domos.map(function (domo) {
-    return React.createElement(
-      "div",
-      { key: domo._id, className: "domo" },
-      React.createElement("img", { src: "/assets/img/domoface.jpeg", alt: "domo face", className: "domoFace" }),
-      React.createElement(
-        "h3",
-        { className: "domoName" },
-        "Name: ",
-        domo.name
-      ),
-      React.createElement(
-        "h3",
-        { className: "domoAge" },
-        "Age: ",
-        domo.age
-      )
-    );
+    return React.createElement(Domo, { domo: domo });
   });
-
   return React.createElement(
     "div",
     { className: "domoList" },
@@ -87,6 +115,7 @@ var setup = function setup(csrf) {
 
 var getToken = function getToken() {
   sendAjax('GET', '/getToken', null, function (result) {
+    csrfToken = result.csrfToken;
     setup(result.csrfToken);
   });
 };
